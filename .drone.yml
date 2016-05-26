@@ -1,0 +1,44 @@
+build:
+  build:
+    when:
+      event: push
+    image: 1and1internet/template-library-tools
+    auth_config:
+      username: $$DOCKERHUB_USERNAME
+      password: $$DOCKERHUB_PASSWORD
+      email: $$DOCKERHUB_EMAIL
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    commands:
+      - docker build --pull --no-cache -t dronebuild$DRONE_BUILD_NUMBER/${CI_REPO#*/} .
+      
+  spectests:
+    when:
+     event: push
+    image: rzarouali/alpine-serverspec
+    privileged: true
+    volumes:
+     - /var/run/docker.sock:/var/run/docker.sock
+    commands:
+     - export IMAGE=dronebuild$DRONE_BUILD_NUMBER/${CI_REPO#*/}
+     - rspec tests/serverspec.rb
+     
+  publish:
+    when:
+      branch: master
+      event: push
+    image: 1and1internet/template-library-tools
+    auth_config:
+     username: $$DOCKERHUB_USERNAME
+     password: $$DOCKERHUB_PASSWORD
+     email: $$DOCKERHUB_EMAIL
+    privileged: true
+    volumes:
+     - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+     - DOCKERHUB_USERNAME=$$DOCKERHUB_USERNAME
+     - DOCKERHUB_EMAIL=$$DOCKERHUB_EMAIL
+     - DOCKERHUB_PASSWORD=$$DOCKERHUB_PASSWORD
+    commands:
+     - bash /scripts/publish.sh
