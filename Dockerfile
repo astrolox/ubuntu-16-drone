@@ -1,5 +1,5 @@
 FROM 1and1internet/ubuntu-16:unstable
-MAINTAINER james.eckersall@fasthosts.co.uk
+MAINTAINER james.eckersall@1and1.co.uk
 ARG DEBIAN_FRONTEND=noninteractive
 #COPY files/ /
 ARG GOPATH=/opt/drone
