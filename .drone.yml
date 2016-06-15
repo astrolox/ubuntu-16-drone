@@ -11,8 +11,7 @@ build:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     commands:
-      - docker build --pull --no-cache -t dronebuild$DRONE_BUILD_NUMBER/${CI_REPO#*/} .
-
+      - python3 /scripts/images/build.py
   spectests:
     when:
      event: push
@@ -40,5 +39,7 @@ build:
      - DOCKERHUB_USERNAME=$$DOCKERHUB_USERNAME
      - DOCKERHUB_EMAIL=$$DOCKERHUB_EMAIL
      - DOCKERHUB_PASSWORD=$$DOCKERHUB_PASSWORD
+     - DEPENDENCY_GRAPH_URL=$$DEPENDENCY_GRAPH_URL
+     - BUILD_TRIGGER_API_URL=$$BUILD_TRIGGER_API_URL
     commands:
-     - bash /scripts/publish.sh
+     - python3 /scripts/images/publish.py
