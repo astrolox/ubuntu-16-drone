@@ -2,7 +2,7 @@ build:
   build:
     when:
       event: push
-    image: 1and1internet/template-library-tools
+    image: 1and1internet/template-library-tools:giraffe
     auth_config:
       username: $$DOCKERHUB_USERNAME
       password: $$DOCKERHUB_PASSWORD
@@ -20,14 +20,15 @@ build:
     volumes:
      - /var/run/docker.sock:/var/run/docker.sock
     commands:
-     - export IMAGE=dronebuild$DRONE_BUILD_NUMBER/${CI_REPO#*/}
+     - export IMAGE=dronejob$CI_JOB_ID/${CI_REPO#*/}
+     - echo $IMAGE
      - rspec tests/serverspec.rb
 
   publish:
     when:
       branch: master
       event: push
-    image: 1and1internet/template-library-tools
+    image: 1and1internet/template-library-tools:giraffe
     auth_config:
      username: $$DOCKERHUB_USERNAME
      password: $$DOCKERHUB_PASSWORD
