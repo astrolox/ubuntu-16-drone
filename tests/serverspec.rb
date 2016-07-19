@@ -30,8 +30,8 @@ describe "Dockerfile" do
       @container.delete(:force => true)
     end
     
-    describe file('/opt/drone/drone_static') do
-      it { should exist }
-    end
+#    describe file('/opt/drone/drone_static') do
+#      it { should exist }
+#    end
   end
 end
