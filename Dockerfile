@@ -11,3 +11,6 @@ RUN cd /usr/share/ca-certificates/ && \
 	apk add ca-certificates && \
 	update-ca-certificates
 
+COPY entrypoint-script /bin/
+ENTRYPOINT /bin/entrypoint-script
+
