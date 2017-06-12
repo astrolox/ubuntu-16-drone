@@ -1,6 +1,0 @@
-#!/bin/sh
-
-env
-
-exec /bin/drone-git $@ 
-
