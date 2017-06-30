@@ -23,7 +23,16 @@ build:
 	##
 	## Starting build of image ${IMAGE_NAME}
 	##
+	docker build --build-arg drone_git_ref=v0.7.3 --tag drone-build --file Dockerfile-build .
+	docker run --rm -v `pwd`:/tmp/drone-build drone-build cp /go/src/github.com/drone/drone/release/drone /tmp/drone-build
+	docker rmi drone-build
 	docker build ${BUILD_ARGS} --tag ${IMAGE_NAME} .
+
+build-multistage:
+	##
+	## Starting build of image ${IMAGE_NAME} using multistage build (Docker > 17.05)
+	##
+	docker build ${BUILD_ARGS} --tag ${IMAGE_NAME} --file Dockerfile-multistage .
 
 test:
 	##

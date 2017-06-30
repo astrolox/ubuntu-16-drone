@@ -7,9 +7,12 @@ A multistage Dockerfile (`Dockerfile-multistage`) is provided which requires doc
 Alternatively the two steps can be run separately:
 
 1. Use `Dockerfile-build` to build the drone binary
-2. Copy it into your working directory:
 
-   `docker run -v `pwd`:/tmp/drone drone-build cp /go/src/github.com/drone/drone/release/drone /tmp/drone`
+   `docker build --build-arg drone_git_ref=v0.7.3 --tag drone-build --file Dockerfile-build .`
+
+2. Copy the binary into your working directory:
+
+   `docker run --rm -v `pwd`:/tmp/drone drone-build cp /go/src/github.com/drone/drone/release/drone /tmp/drone`
 
 3. Build the final image
 
