@@ -1,4 +1,24 @@
-# docker-ubuntu-16-drone
+Repackaging of Drone with the 1&1 root and issuing certificates installed.
 
-Drone CI built from same commit as drone/drone:0.4 image on dockerhub.
-https://github.com/drone/drone/tree/b354b93658718c5c097309a7c98b5c7f5902048a
+[Drone](https://github.com/drone/drone) is a Continuous Delivery system built on container technology. Drone uses a simple yaml configuration file, a superset of docker-compose, to define and execute Pipelines inside Docker containers.
+
+A multistage Dockerfile (`Dockerfile-multistage`) is provided which requires docker 17.05
+
+Alternatively the two steps can be run separately:
+
+1. Use `Dockerfile-build` to build the drone binary
+
+   `docker build --build-arg drone_git_ref=v0.7.3 --tag drone-build --file Dockerfile-build .`
+
+2. Copy the binary into your working directory:
+
+   `docker run --rm -v `pwd`:/tmp/drone drone-build cp /go/src/github.com/drone/drone/release/drone /tmp/drone`
+
+3. Build the final image
+
+   `docker build -t drone .` 
+
+
+Note that the default `Dockerfile` expects a compiled drone binary to be present in the working directory which it copies into the image
+
+
