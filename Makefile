@@ -15,7 +15,7 @@ TESTS_LOCAL =
 # This path is hard coded in Dockerfile-container - do not override
 BIN_PATH = ${PWD}/bin/
 
-all: pull build build test
+all: pull build test
 
 pull:
 	##
