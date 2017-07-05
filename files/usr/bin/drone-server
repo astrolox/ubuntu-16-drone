@@ -1,3 +1,7 @@
 #!/usr/bin/env bash
+
+# remove this because docker is not needed by a standalone drone server
+rm -f /hooks/supervisord-pre.d/99_wait_for_docker_socket
+
 rm -f /etc/supervisor/conf.d/drone-agent.conf
 exec /init/supervisord

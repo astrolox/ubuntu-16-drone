@@ -3,6 +3,10 @@ MAINTAINER brian.wojtczak@1and1.co.uk
 ARG DEBIAN_FRONTEND=noninteractive
 COPY files/ /
 RUN \
+  apt-get update -q && \
+  apt-get install -y inotify-tools && \
+  apt-get clean -q -y && \
+  rm -rf /var/lib/apt/lists/* && \
   cd /usr/share/ca-certificates/ && \
   mkdir 1and1 && \
   cd 1and1 && \
