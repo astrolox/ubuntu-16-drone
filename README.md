@@ -42,7 +42,7 @@ IMAGE_NAME=ubuntu-16-drone
 docker build --tag ${IMAGE_NAME} .
 ```
 
-### Building without using the Makefile (without docker version 17.05 or later)
+### Building without using the Makefile (docker version 17.04 or earlier)
 
 The `Dockerfile-compile` is used to produce the `drone` binary which you are then expected to copy to the `bin` sub folder of the working directory.
 
