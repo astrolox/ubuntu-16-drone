@@ -6,10 +6,7 @@ pipeline:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     commands:
-      - TEMP_IMAGE_ID=$(docker build --build-arg drone_git_ref=v0.7.3 --quiet --file Dockerfile-build .)
-      - docker run --rm -v `pwd`:/tmp/drone-build $TEMP_IMAGE_ID cp /go/src/github.com/drone/drone/release/drone /tmp/drone-build
-      - docker rmi $TEMP_IMAGE_ID
-      - python3 -u /scripts/images/build.py
+      - make build IMAGE_NAME=build-${CI_REPO#*/}-${CI_BUILD_NUMBER}/${CI_REPO#*/}
 
   spectests:
     when:

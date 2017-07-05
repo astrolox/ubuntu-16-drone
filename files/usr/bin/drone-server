@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+rm -f /etc/supervisor/conf.d/drone-agent.conf
+exec /init/supervisord

@@ -1,0 +1,8 @@
+FROM golang:1.8
+ARG drone_git_ref=v0.7.3
+WORKDIR /go/src/github.com/drone/drone/
+RUN \
+  git clone https://github.com/drone/drone.git --branch $drone_git_ref --single-branch . && \
+  go get -u github.com/drone/drone-ui/dist && \
+  go get -u golang.org/x/tools/cmd/cover && \
+  go build -ldflags '-extldflags "-static" -X github.com/drone/drone/version.VersionDev=1and1' -o release/drone github.com/drone/drone/drone
