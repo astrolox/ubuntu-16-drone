@@ -29,7 +29,9 @@ RUN \
   rm a b && \
   cd .. && \ 
   ls -1 1and1/* >>  /etc/ca-certificates.conf && \ 
-  update-ca-certificates 
+  update-ca-certificates && \
+  ln -s /usr/bin/drone-server /usr/bin/server && \
+  ln -s /usr/bin/drone-agent /usr/bin/agent
 
 COPY --from=compiler /go/src/github.com/drone/drone/release/drone /opt/drone/drone
 
