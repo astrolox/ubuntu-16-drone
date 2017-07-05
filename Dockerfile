@@ -31,7 +31,8 @@ RUN \
   ls -1 1and1/* >>  /etc/ca-certificates.conf && \ 
   update-ca-certificates && \
   ln -s /usr/bin/drone-server /usr/bin/server && \
-  ln -s /usr/bin/drone-agent /usr/bin/agent
+  ln -s /usr/bin/drone-agent /usr/bin/agent && \
+  chmod -R 777 /hooks/supervisord-pre.d/ /etc/supervisor/conf.d/
 
 COPY --from=compiler /go/src/github.com/drone/drone/release/drone /opt/drone/drone
 
