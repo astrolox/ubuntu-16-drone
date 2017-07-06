@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+rm -f /etc/supervisor/conf.d/drone-server.conf
+exec /init/supervisord

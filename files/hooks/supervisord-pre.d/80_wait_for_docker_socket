@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+while ! test -e "/var/run/docker.sock"; do
+  echo "Waiting for /var/run/docker.sock to exist"
+  inotifywait --timeout 30 --event create /var/run/ > /dev/null 2>&1
+done

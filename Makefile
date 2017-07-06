@@ -5,10 +5,15 @@ RSPEC_IMAGE = 1and1internet/ubuntu-16-rspec
 TESTS_REPO = https://github.com/1and1internet/drone-tests.git
 DOCKER_SOCKET = /var/run/docker.sock
 BUILD_ARGS = --rm
+COMPILE_IMAGE_NAME = ${IMAGE_NAME}-compile
+COMPILE_BUILD_ARGS = --rm
 RSPEC_ARGS = 
 
 # To use a locally modified copy of the tests repository set the TESTS_LOCAL variable to the absolute path of where it is located.
 TESTS_LOCAL =
+
+# This path is hard coded in Dockerfile-container - do not override
+BIN_PATH = ${PWD}/bin/
 
 all: pull build test
 
@@ -16,23 +21,33 @@ pull:
 	##
 	## Pulling image updates from registry
 	##
-	docker pull ${BASE_IMAGE}
-	docker pull ${RSPEC_IMAGE}
+	for IMAGE in ${BASE_IMAGE} ${RSPEC_IMAGE}; \
+		do docker pull $${IMAGE}; \
+	done
 
-build:
-	##
-	## Starting build of image ${IMAGE_NAME}
-	##
-	$(eval TEMP_IMAGE_ID = $(shell docker build --build-arg drone_git_ref=v0.7.3 --quiet --file Dockerfile-build .))
-	docker run --rm -v ${PWD}:/tmp/drone-build ${TEMP_IMAGE_ID} cp /go/src/github.com/drone/drone/release/drone /tmp/drone-build
-	docker rmi ${TEMP_IMAGE_ID}
-	docker build ${BUILD_ARGS} --tag ${IMAGE_NAME} .
+build: build-binary build-image
 
 build-multistage:
 	##
 	## Starting build of image ${IMAGE_NAME} using multistage build (Docker > 17.05)
 	##
-	docker build ${BUILD_ARGS} --tag ${IMAGE_NAME} --file Dockerfile-multistage .
+	docker build ${BUILD_ARGS} --tag ${IMAGE_NAME} --file Dockerfile .
+
+build-binary:
+	##
+	## Starting build of image ${COMPILE_IMAGE_NAME}
+	##
+	rm -rf ${BIN_PATH} && mkdir -p ${BIN_PATH}
+	docker build ${COMPILE_BUILD_ARGS} --tag ${COMPILE_IMAGE_NAME} --file Dockerfile-compile .
+	$(eval CONTAINER_ID = $(shell docker create ${COMPILE_IMAGE_NAME}))
+	docker cp ${CONTAINER_ID}:/go/src/github.com/drone/drone/release/drone ${BIN_PATH}
+	docker rm -v ${CONTAINER_ID}
+
+build-image:
+	##
+	## Starting build of image ${IMAGE_NAME}
+	##
+	docker build ${BUILD_ARGS} --tag ${IMAGE_NAME} --file Dockerfile-container .
 
 test:
 	##
@@ -57,4 +72,15 @@ run-rspec:
 	## Testing image ${IMAGE_NAME}
 	IMAGE=${IMAGE_NAME} rspec ${RSPEC_ARGS}
 
-.PHONY: all pull build test do-test checkout-drone-tests run-rspec
+run:
+	##
+	## Running with docker compose
+	###
+	docker-compose up
+
+clean:
+	docker rmi ${IMAGE_NAME}
+	docker rmi ${COMPILE_IMAGE_NAME}
+	rm -rf ${BIN_PATH}
+
+.PHONY: all pull build build-binary build-image build-multistage test do-test checkout-drone-tests run-rspec run clean
