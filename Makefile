@@ -39,8 +39,8 @@ build-binary:
 	##
 	rm -rf ${BIN_PATH} && mkdir -p ${BIN_PATH}
 	docker build ${COMPILE_BUILD_ARGS} --tag ${COMPILE_IMAGE_NAME} --file Dockerfile-compile .
-	$(eval CONTAINER_ID = $(shell docker create ${COMPILE_IMAGE_NAME}))
 	docker cp ${CONTAINER_ID}:/go/src/github.com/drone/drone/release/drone ${BIN_PATH}
+	$(eval CONTAINER_ID=$(shell docker create ${COMPILE_IMAGE_NAME}))
 	docker rm -v ${CONTAINER_ID}
 
 build-image:
