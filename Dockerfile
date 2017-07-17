@@ -1,15 +1,21 @@
 FROM golang:1.8 as compiler
-MAINTAINER brian.wojtczak@1and1.co.uk
-ARG drone_git_ref=v0.7.3
+LABEL "maintainer"="brian.wojtczak@1and1.co.uk"
+ARG drone_git_ref=547514348d1836db33edeef82d68dd92620f39b4
 WORKDIR /go/src/github.com/drone/drone/
 RUN \
-  git clone https://github.com/drone/drone.git --branch $drone_git_ref --single-branch . && \
+  git clone https://github.com/drone/drone.git . && \
+  git checkout $drone_git_ref && \
   go get -u github.com/drone/drone-ui/dist && \
   go get -u golang.org/x/tools/cmd/cover && \
-  go build -ldflags '-extldflags "-static" -X github.com/drone/drone/version.VersionDev=1and1' -o release/drone github.com/drone/drone/drone
+  go get -u golang.org/x/net/context && \
+  go get -u golang.org/x/net/context/ctxhttp && \
+  go get -u github.com/golang/protobuf/proto && \
+  go get -u github.com/golang/protobuf/protoc-gen-go && \
+  go build -ldflags '-extldflags "-static" -X github.com/drone/drone/version.VersionDev=1and1' -o release/drone-server github.com/drone/drone/cmd/drone-server && \
+  GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags '-X github.com/drone/drone/version.VersionDev=1and1' -o release/drone-agent github.com/drone/drone/cmd/drone-agent
 
 FROM 1and1internet/ubuntu-16
-MAINTAINER brian.wojtczak@1and1.co.uk
+LABEL "maintainer"="brian.wojtczak@1and1.co.uk"
 ARG DEBIAN_FRONTEND=noninteractive
 COPY files/ /
 RUN \
@@ -34,6 +40,6 @@ RUN \
   ln -s /usr/bin/drone-agent /usr/bin/agent && \
   chmod -R 777 /hooks/supervisord-pre.d/ /etc/supervisor/conf.d/
 
-COPY --from=compiler /go/src/github.com/drone/drone/release/drone /opt/drone/drone
+COPY --from=compiler /go/src/github.com/drone/drone/release/drone-* /opt/drone/
 
-EXPOSE 8000 80 443
+EXPOSE 8000 9000 80 443

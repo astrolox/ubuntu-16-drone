@@ -59,11 +59,11 @@ docker build COMPILE_BUILD_ARGS = --rm --tag ${COMPILE_IMAGE_NAME} --file Docker
 # Stage 2 - Copy the drone binary to the local work space
 rm -rf bin && mkdir -p bin
 CONTAINER_ID=`docker create ${COMPILE_IMAGE_NAME}`
-docker cp ${CONTAINER_ID}:/go/src/github.com/drone/drone/release/drone bin
+docker cp ${CONTAINER_ID}:/go/src/github.com/drone/drone/release/. bin
 docker rm ${CONTAINER_ID}
 
 # Stage 3 - Build the final image
-docker build --tag ${IMAGE_NAME} .
+docker build --tag ${IMAGE_NAME} --file Dockerfile-package .
 ```
 
 ## Modifying the tests
